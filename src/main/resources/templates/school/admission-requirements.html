@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admission Requirements</title>
+</head>
+<body>
+    <p th:if="${sampleLevel != null}"
+       th:text="|${sampleLevel.programme.name} — S${sampleLevel.level} seat limit: ${sampleLevel.seatLimit}|"></p>
+    <p th:if="${sampleLevel == null}">No programme level found. Run data.sql to load the sample.</p>
+</body>
+</html>
