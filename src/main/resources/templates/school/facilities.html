@@ -1,9 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>Facilities</title>
+    <title th:text="${pageTitle}">學校設施 - CIS</title>
+    <link rel="stylesheet" th:href="@{/css/school.css}">
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
+<main class="container">
+    <h1>學校設施及實驗室</h1>
+    <div class="facility-list">
+        <div th:each="facility : ${facilities}" class="facility-item">
+            <h3 th:text="${facility.name}"></h3>
+            <p th:text="${facility.description}"></p>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
