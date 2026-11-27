@@ -1,9 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Member Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Profile - CIS School Admission System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 共用導航列 -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <!-- 頁面標題橫幅 -->
+    <header class="bg-slate-900 text-white py-10 px-4 border-b border-slate-800">
+        <div class="max-w-4xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <span class="text-amber-400 font-bold text-xs uppercase tracking-wider">Member Portal (FR03 / BR03)</span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold mt-1">My CIS Member Profile</h1>
+            </div>
+            <span class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold px-3 py-1.5 rounded-full">
+                <span>&#10003;</span> Verified Member Account
+            </span>
+        </div>
+    </header>
+
+    <!-- 主內容區 -->
+    <main class="max-w-4xl mx-auto w-full px-4 py-10 flex-grow space-y-6">
+
+        <!-- 會員資料唯讀卡片 (U09: 以只读方式显示注册后建立的会员档案) -->
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 bg-slate-100/70 border-b border-slate-200 flex justify-between items-center">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Registered Personal &amp; Contact Information</h2>
+                    <p class="text-xs text-slate-500">Read-only profile record verified during CIS membership registration.</p>
+                </div>
+                <span class="text-xs font-mono text-slate-400">Read-Only</span>
+            </div>
+
+            <div class="p-6 sm:p-8" th:if="${account != null}">
+                <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-6 text-sm">
+                    <!-- 姓名 -->
+                    <div class="border-b border-slate-100 pb-3">
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Full Name</dt>
+                        <dd class="text-base font-bold text-slate-900" th:text="${account.fullName}">Chan Tai Man</dd>
+                    </div>
+
+                    <!-- HKID -->
+                    <div class="border-b border-slate-100 pb-3">
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">HKID Number</dt>
+                        <dd class="text-base font-mono font-semibold text-slate-900" th:text="${account.hkid}">A123456(7)</dd>
+                    </div>
+
+                    <!-- 電話 -->
+                    <div class="border-b border-slate-100 pb-3">
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Telephone Number</dt>
+                        <dd class="text-base font-mono font-semibold text-slate-900" th:text="${account.phone}">91234567</dd>
+                    </div>
+
+                    <!-- 電郵 -->
+                    <div class="border-b border-slate-100 pb-3">
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Email Address (Login Account)</dt>
+                        <dd class="text-base font-semibold text-slate-900" th:text="${account.email}">applicant@example.com</dd>
+                    </div>
+
+                    <!-- 驗證時間 (若有提供) -->
+                    <div class="sm:col-span-2" th:if="${account.verifiedAt != null}">
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Email Verified At</dt>
+                        <dd class="text-xs font-mono text-slate-600"
+                            th:text="${#temporals.format(account.verifiedAt, 'yyyy-MM-dd HH:mm:ss')}">
+                            2026-11-27 10:30:00
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </section>
+
+        <!-- 快捷操作區 -->
+        <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="text-sm text-slate-600">
+                Ready to submit an admission application or check your published results?
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <a th:href="@{/application/list}"
+                   class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs px-4 py-2.5 rounded-lg transition">
+                    My Applications (U11)
+                </a>
+                <a th:href="@{/application/new}"
+                   class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-xs px-4 py-2.5 rounded-lg shadow-sm transition">
+                    New Application (U10) &rarr;
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 共用頁尾 -->
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
 </body>
 </html>

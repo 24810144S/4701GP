@@ -1,9 +1,187 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Application Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Details - CIS School Admission System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 共用導航列 -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <!-- 頁面標題橫幅 -->
+    <header class="bg-slate-900 text-white py-10 px-4 border-b border-slate-800">
+        <div class="max-w-4xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <a th:href="@{/applications}" class="text-xs text-slate-400 hover:text-amber-400 transition">&larr; Back to My Applications</a>
+                <h1 class="text-2xl sm:text-3xl font-extrabold mt-1">
+                    Application #<span th:text="${app.id}">1001</span>
+                </h1>
+            </div>
+            <span class="font-mono text-xs bg-white/10 px-3 py-1.5 rounded text-slate-200">
+                Submitted: <span th:text="${#temporals.format(app.submittedAt, 'yyyy-MM-dd HH:mm')}">2026-11-27 14:00</span> HKT
+            </span>
+        </div>
+    </header>
+
+    <!-- 主內容區 -->
+    <main class="max-w-4xl mx-auto w-full px-4 py-10 flex-grow space-y-6">
+
+        <!-- 回應操作成功提示 (Accept 或 Decline 後留在詳情頁顯示) -->
+        <div th:if="${param.responded}" class="p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-sm flex items-start gap-3">
+            <span class="font-bold text-base">&#10003;</span>
+            <div>
+                <p class="font-bold">Your Offer Response Has Been Recorded</p>
+                <p class="text-xs text-blue-700 mt-0.5">
+                    Thank you for confirming your decision. This response is final and saved in your admission record (BR08).
+                </p>
+            </div>
+        </div>
+
+        <!-- 錯誤提示 -->
+        <div th:if="${error}" class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+            <span th:text="${error}">Unable to process offer response.</span>
+        </div>
+
+        <!-- 區塊 1: 申請基本資料 -->
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 bg-slate-100/70 border-b border-slate-200">
+                <h2 class="text-base font-bold text-slate-900">1. Application Summary</h2>
+            </div>
+            <div class="p-6 grid sm:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Applicant Name</span>
+                    <span class="font-bold text-slate-900" th:text="${app.member.fullName}">Chan Tai Man</span>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">HKID Number</span>
+                    <span class="font-mono font-semibold text-slate-900" th:text="${app.member.hkid}">A123456(7)</span>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Applied Programme</span>
+                    <span class="font-bold text-slate-900" th:text="${app.programmeLevel.programme.name}">HKDSE Programme</span>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Entry Level</span>
+                    <span class="font-bold text-slate-900">Secondary <span th:text="${app.programmeLevel.level}">1</span> (S<span th:text="${app.programmeLevel.level}">1</span>)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區塊 2: 審核結果與錄取回應 (BR05, BR06, BR08, BR09) -->
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 bg-slate-100/70 border-b border-slate-200">
+                <h2 class="text-base font-bold text-slate-900">2. Admission Decision &amp; Offer Response</h2>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- 錄取決定與回應狀態並排顯示 (BR08: 分別保存和顯示) -->
+                <div class="grid sm:grid-cols-2 gap-6">
+                    <!-- 左欄：最新錄取結果 -->
+                    <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                        <span class="text-xs font-semibold uppercase text-slate-400 block mb-2">Latest Published Result</span>
+
+                        <!-- 未公布 -->
+                        <div th:if="${app.publishedAt == null}">
+                            <span class="inline-block bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1 rounded-full">
+                                Not published
+                            </span>
+                            <p class="text-xs text-slate-500 mt-2">
+                                Your application is under review. Results will appear here once published by the Admissions Office.
+                            </p>
+                        </div>
+
+                        <!-- 已公布 -->
+                        <div th:if="${app.publishedAt != null}">
+                            <span th:if="${app.decision == 'Success'}"
+                                  class="inline-block bg-emerald-100 text-emerald-800 text-sm font-extrabold px-3.5 py-1 rounded-full">
+                                Success (Offer Granted)
+                            </span>
+                            <span th:if="${app.decision == 'Fail'}"
+                                  class="inline-block bg-red-100 text-red-700 text-sm font-extrabold px-3.5 py-1 rounded-full">
+                                Fail (Unsuccessful)
+                            </span>
+                            <span th:if="${app.decision == 'Wait'}"
+                                  class="inline-block bg-amber-100 text-amber-800 text-sm font-extrabold px-3.5 py-1 rounded-full">
+                                Wait (Waitlisted)
+                            </span>
+                            <p class="text-xs text-slate-400 font-mono mt-2">
+                                Published at: <span th:text="${#temporals.format(app.publishedAt, 'yyyy-MM-dd HH:mm')}">2026-11-28 10:00</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 右欄：會員錄取回應 -->
+                    <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                        <span class="text-xs font-semibold uppercase text-slate-400 block mb-2">Applicant Offer Response</span>
+
+                        <div th:if="${app.offerResponse == 'ACCEPTED'}">
+                            <span class="inline-block bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                Accepted
+                            </span>
+                            <p class="text-xs text-slate-500 mt-2" th:if="${app.respondedAt != null}">
+                                Confirmed at: <span class="font-mono" th:text="${#temporals.format(app.respondedAt, 'yyyy-MM-dd HH:mm')}">2026-11-28 12:00</span>
+                            </p>
+                        </div>
+
+                        <div th:if="${app.offerResponse == 'DECLINED'}">
+                            <span class="inline-block bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                Declined
+                            </span>
+                            <p class="text-xs text-slate-500 mt-2" th:if="${app.respondedAt != null}">
+                                Declined at: <span class="font-mono" th:text="${#temporals.format(app.respondedAt, 'yyyy-MM-dd HH:mm')}">2026-11-28 12:00</span>
+                            </p>
+                        </div>
+
+                        <div th:if="${app.offerResponse == null}">
+                            <span class="text-sm font-semibold text-slate-500">No response recorded yet</span>
+                            <p class="text-xs text-slate-400 mt-1">
+                                Available only when a Success admission offer is published.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 接受 / 拒絕操作區 (U12 / BR08: 只有已發佈的 Success 且尚未回應時才顯示按鈕) -->
+                <div th:if="${app.publishedAt != null and app.decision == 'Success' and app.offerResponse == null}"
+                     class="p-5 rounded-xl bg-amber-50 border border-amber-200 space-y-4">
+                    <div>
+                        <h3 class="font-bold text-amber-950 text-base">Congratulations! Please Respond to Your Admission Offer</h3>
+                        <p class="text-xs text-amber-800 mt-1 leading-relaxed">
+                            Please choose whether to accept or decline this admission offer. Note that only one response can be recorded per offer (BR08). Declining will immediately release your seat to waitlisted applicants (BR09).
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3">
+                        <!-- 接受錄取表單 -->
+                        <form th:action="@{/applications/{id}/accept(id=${app.id})}" method="post"
+                              onsubmit="return confirm('Confirm ACCEPTING this admission offer? This action cannot be undone.');">
+                            <button type="submit"
+                                    class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-5 py-2.5 rounded-lg shadow-sm transition">
+                                &#10003; Accept Offer
+                            </button>
+                        </form>
+
+                        <!-- 拒絕錄取表單 -->
+                        <form th:action="@{/applications/{id}/decline(id=${app.id})}" method="post"
+                              onsubmit="return confirm('Confirm DECLINING this admission offer? Your seat will be released immediately.');">
+                            <button type="submit"
+                                    class="bg-white hover:bg-red-50 text-red-700 border border-red-300 font-bold text-sm px-5 py-2.5 rounded-lg transition">
+                                &#10005; Decline Offer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 共用頁尾 -->
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
 </body>
 </html>
