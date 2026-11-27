@@ -1,9 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>New Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Admission Application - CIS School Admission System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 共用導航列 -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <!-- 頁面標題橫幅 -->
+    <header class="bg-slate-900 text-white py-10 px-4 border-b border-slate-800">
+        <div class="max-w-3xl mx-auto">
+            <span class="text-amber-400 font-bold text-xs uppercase tracking-wider">Online Admission (FR04 / BR04)</span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold mt-1">Submit Admission Application</h1>
+            <p class="text-slate-300 text-sm mt-1">
+                Select your target secondary school programme and entry level (S1–S6) before the Hong Kong Time deadline.
+            </p>
+        </div>
+    </header>
+
+    <!-- 主內容區 -->
+    <main class="max-w-3xl mx-auto w-full px-4 py-10 flex-grow">
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+
+            <!-- 申請人基本資料確認區 (唯讀) -->
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm" th:if="${account != null}">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Applicant Details (Verified Profile)</div>
+                <div class="grid sm:grid-cols-3 gap-3">
+                    <div>
+                        <span class="text-slate-500 text-xs block">Full Name</span>
+                        <span class="font-bold text-slate-900" th:text="${account.fullName}">Chan Tai Man</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 text-xs block">HKID</span>
+                        <span class="font-mono font-semibold text-slate-900" th:text="${account.hkid}">A123456(7)</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 text-xs block">Notification Email</span>
+                        <span class="font-semibold text-slate-900" th:text="${account.email}">applicant@example.com</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 後端錯誤提示框 (BR04: 截止時間後拒絕提交或重複申請時顯示) -->
+            <div th:if="${error}" class="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2.5">
+                <span class="font-bold text-base">!</span>
+                <span th:text="${error}">Submission rejected: The application deadline for this programme has passed.</span>
+            </div>
+
+            <!-- 申請提交表單 -->
+            <form th:action="@{/applications}" method="post" id="applicationForm" class="space-y-5">
+
+                <!-- 1. 選擇課程 (Programme) -->
+                <div>
+                    <label for="programmeId" class="block text-sm font-bold text-slate-800 mb-1.5">
+                        1. Select School Programme <span class="text-red-500">*</span>
+                    </label>
+                    <select id="programmeId"
+                            name="programmeId"
+                            required
+                            onchange="updateProgrammeInfo()"
+                            class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        <option value="" disabled th:selected="${selectedProgrammeId == null}">-- Choose a Secondary Programme --</option>
+                        <option th:each="entry : ${programmeMap}"
+                                th:value="${entry.key.id}"
+                                th:text="${entry.key.name}"
+                                th:selected="${selectedProgrammeId != null and selectedProgrammeId == entry.key.id}"
+                                th:attr="data-deadline=${#temporals.format(entry.key.applicationDeadline, 'yyyy-MM-dd''T''HH:mm:ss')},
+                                         data-deadline-display=${#temporals.format(entry.key.applicationDeadline, 'yyyy-MM-dd HH:mm')},
+                                         data-open=${entry.key.applicationDeadline.isAfter(nowHkt)}">
+                            HKDSE Programme
+                        </option>
+                    </select>
+                </div>
+
+                <!-- 動態顯示：該課程的截止日期與狀態提示 -->
+                <div id="deadlineBanner" class="hidden rounded-lg p-4 border text-sm">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider block" id="deadlineStatusLabel">Application Deadline (HKT)</span>
+                            <span class="font-mono font-bold text-base" id="deadlineText">2026-12-15 23:59</span>
+                        </div>
+                        <span id="deadlineBadge" class="text-xs font-bold px-3 py-1 rounded-full">Open</span>
+                    </div>
+                    <p id="deadlineWarning" class="hidden text-xs mt-2 font-medium">
+                        Applications for this programme are closed as the Hong Kong Time deadline has passed (BR04). Submission is disabled.
+                    </p>
+                </div>
+
+                <!-- 2. 選擇入學年級 (Level S1 - S6) -->
+                <div>
+                    <label for="level" class="block text-sm font-bold text-slate-800 mb-1.5">
+                        2. Select Entry Level (S1 – S6) <span class="text-red-500">*</span>
+                    </label>
+                    <select id="level"
+                            name="level"
+                            required
+                            class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        <option value="" disabled selected>-- Choose Secondary Level --</option>
+                        <option value="1">Secondary 1 (S1)</option>
+                        <option value="2">Secondary 2 (S2)</option>
+                        <option value="3">Secondary 3 (S3)</option>
+                        <option value="4">Secondary 4 (S4)</option>
+                        <option value="5">Secondary 5 (S5)</option>
+                        <option value="6">Secondary 6 (S6)</option>
+                    </select>
+                    <p class="text-xs text-slate-500 mt-1.5">
+                        Note: Upon submission, an acknowledgement email will be sent to your registered email address (BR05 / BR10).
+                    </p>
+                </div>
+
+                <!-- 按鈕區 -->
+                <div class="pt-4 border-t border-slate-100 flex flex-wrap justify-between items-center gap-3">
+                    <a th:href="@{/school/admission-requirements}" class="text-sm text-slate-500 hover:text-slate-800 font-medium">
+                        &larr; Back to Seat Quotas
+                    </a>
+
+                    <button type="submit"
+                            id="submitBtn"
+                            class="bg-amber-500 hover:bg-amber-400 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-slate-900 font-bold px-6 py-2.5 rounded-lg shadow-sm transition">
+                        Submit Application
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </main>
+
+    <!-- 共用頁尾 -->
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
+    <!-- 前端即時檢查截止日期腳本 -->
+    <script>
+        function updateProgrammeInfo() {
+            const select = document.getElementById('programmeId');
+            const selectedOption = select.options[select.selectedIndex];
+            const banner = document.getElementById('deadlineBanner');
+            const deadlineText = document.getElementById('deadlineText');
+            const deadlineBadge = document.getElementById('deadlineBadge');
+            const deadlineWarning = document.getElementById('deadlineWarning');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!selectedOption || !selectedOption.value) {
+                banner.classList.add('hidden');
+                return;
+            }
+
+            const displayTime = selectedOption.getAttribute('data-deadline-display');
+            const isOpen = selectedOption.getAttribute('data-open') === 'true';
+
+            banner.classList.remove('hidden');
+            deadlineText.textContent = displayTime + ' HKT';
+
+            if (isOpen) {
+                banner.className = 'rounded-lg p-4 border text-sm bg-emerald-50 border-emerald-200 text-emerald-900';
+                deadlineBadge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-emerald-600 text-white';
+                deadlineBadge.textContent = 'Open for Application';
+                deadlineWarning.classList.add('hidden');
+                submitBtn.disabled = false;
+            } else {
+                banner.className = 'rounded-lg p-4 border text-sm bg-red-50 border-red-200 text-red-900';
+                deadlineBadge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-red-600 text-white';
+                deadlineBadge.textContent = 'Deadline Passed';
+                deadlineWarning.classList.remove('hidden');
+                submitBtn.disabled = true;
+            }
+        }
+
+        // 若從 U05 帶入 programmeId 參數，頁面載入時自動觸發一次顯示
+        document.addEventListener('DOMContentLoaded', updateProgrammeInfo);
+    </script>
+
 </body>
 </html>
