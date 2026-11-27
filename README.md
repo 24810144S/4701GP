@@ -51,3 +51,5 @@ To check the protected page, open `http://localhost:8080/admin/admissions` in a 
 - E owns `offer/` and `notification/`. Agree on the U12 form action with C. Put member-only offer routes under `/applications/`.
 
 Most HTML templates are empty placeholders. U05 displays the database sample, and U08 contains the basic login form. Registration, submissions, review, offer replies and email remain team implementation work.
+
+##test submit
