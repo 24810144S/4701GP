@@ -12,42 +12,42 @@ public class SchoolService {
 
     public List<Map<String, String>> getTeachers() {
         List<Map<String, String>> teachers = new ArrayList<>();
-        teachers.add(createPerson("Dr. Emily Chan", "校長", "教育管理博士"));
-        teachers.add(createPerson("Mr. David Wong", "副校長", "國際課程專家"));
-        teachers.add(createPerson("Ms. Sarah Lee", "英語科主任", "TESOL 碩士"));
-        teachers.add(createPerson("Dr. Michael Cheung", "科學科主任", "化學博士"));
+        teachers.add(createPerson("Dr. Emily Chan", "Principal", "Doctor of Education Management"));
+        teachers.add(createPerson("Mr. David Wong", "Vice Principal", "International Curriculum Expert"));
+        teachers.add(createPerson("Ms. Sarah Lee", "Head of English", "Master of TESOL"));
+        teachers.add(createPerson("Dr. Michael Cheung", "Head of Science", "Doctor of Chemistry"));
         return teachers;
     }
 
     public List<Map<String, String>> getFacilities() {
         List<Map<String, String>> facilities = new ArrayList<>();
-        facilities.add(createFacility("科學實驗室", "配備現代化實驗設備，支援物理、化學、生物實驗"));
-        facilities.add(createFacility("電腦室", "高速網絡與最新軟件，支援 STEM 教育"));
-        facilities.add(createFacility("圖書館", "藏書豐富，提供安靜自習空間"));
-        facilities.add(createFacility("體育館", "多功能室內運動場，支援各項體育活動"));
-        facilities.add(createFacility("藝術工作室", "繪畫、音樂與戲劇創作空間"));
+        facilities.add(createFacility("Science Laboratories", "Equipped with modern experimental equipment supporting Physics, Chemistry and Biology experiments"));
+        facilities.add(createFacility("Computer Rooms", "High-speed network and latest software supporting STEM education"));
+        facilities.add(createFacility("Library", "Extensive collection of books with quiet study spaces"));
+        facilities.add(createFacility("Gymnasium", "Multi-purpose indoor sports hall supporting various physical activities"));
+        facilities.add(createFacility("Art Studio", "Space for painting, music and drama creation"));
         return facilities;
     }
 
     public List<Map<String, String>> getProgrammes() {
         List<Map<String, String>> programmes = new ArrayList<>();
-        programmes.add(createProgramme("DSE 課程", "香港中學文憑考試課程，適合本地升學路徑"));
-        programmes.add(createProgramme("IB 課程", "國際文憑課程，強調全人教育與國際視野"));
+        programmes.add(createProgramme("DSE Programme", "Hong Kong Diploma of Secondary Education curriculum, suitable for local further study pathways"));
+        programmes.add(createProgramme("IB Programme", "International Baccalaureate Diploma Programme, emphasising holistic education and global perspective"));
         return programmes;
     }
 
     public List<Map<String, String>> getCourseDescriptions() {
         List<Map<String, String>> courses = new ArrayList<>();
-        courses.add(createCourse("中一至中三", "基礎核心科目：中文、英文、數學、科學、人文"));
-        courses.add(createCourse("中四至中六 (DSE)", "選修科目包括物理、化學、生物、經濟、歷史等"));
-        courses.add(createCourse("中四至中六 (IB)", "IB Diploma Programme，包含 TOK、EE、CAS"));
+        courses.add(createCourse("S1 to S3", "Core foundation subjects: Chinese, English, Mathematics, Science, Humanities"));
+        courses.add(createCourse("S4 to S6 (DSE)", "Elective subjects including Physics, Chemistry, Biology, Economics, History, etc."));
+        courses.add(createCourse("S4 to S6 (IB)", "IB Diploma Programme including TOK, Extended Essay and CAS"));
         return courses;
     }
 
     public List<Map<String, Object>> getAdmissionRequirements() {
         List<Map<String, Object>> list = new ArrayList<>();
-        list.add(createAdmission("DSE 課程", "2026-12-31", "良好操行、面試、學業成績"));
-        list.add(createAdmission("IB 課程", "2026-12-15", "英語能力、面試、推薦信"));
+        list.add(createAdmission("DSE Programme", "2026-12-31", "Good conduct, interview, academic results"));
+        list.add(createAdmission("IB Programme", "2026-12-15", "English proficiency, interview, recommendation letter"));
         return list;
     }
 

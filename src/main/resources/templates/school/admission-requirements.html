@@ -2,11 +2,173 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Admission Requirements</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admission Requirements &amp; Quotas - Christian International School (CIS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <p th:if="${sampleLevel != null}"
-       th:text="|${sampleLevel.programme.name} — S${sampleLevel.level} seat limit: ${sampleLevel.seatLimit}|"></p>
-    <p th:if="${sampleLevel == null}">No programme level found. Run data.sql to load the sample.</p>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 共用導航列 -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <!-- 頁面標題橫幅 -->
+    <header class="bg-slate-900 text-white py-12 px-4 border-b border-slate-800">
+        <div class="max-w-6xl mx-auto">
+            <span class="text-amber-400 font-bold text-xs uppercase tracking-wider">Admissions &amp; Quotas (BR01)</span>
+            <h1 class="text-3xl font-extrabold mt-1">Admission Requirements &amp; Seat Limits (S1–S6)</h1>
+            <p class="text-slate-300 max-w-2xl mt-2 text-sm leading-relaxed">
+                Review entry criteria, programme application deadlines (Hong Kong Time), and maximum available seats per secondary level before submitting your online application.
+            </p>
+        </div>
+    </header>
+
+    <!-- 主內容區 -->
+    <main class="max-w-6xl mx-auto px-4 py-10 flex-grow space-y-12">
+
+        <!-- 區塊 1: S1–S6 名額上限與截止日期總表 (從資料庫動態讀取) -->
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">1. Programme Deadlines &amp; Maximum Seat Limits (S1 – S6)</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">All deadlines follow Hong Kong Time (HKT / UTC+8).</p>
+                </div>
+                <span class="text-xs bg-slate-100 text-slate-700 font-semibold px-3 py-1 rounded-full border border-slate-200">
+                    Total School Capacity: ~1,000 Students
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left border-collapse">
+                    <thead class="bg-slate-100 text-slate-700 text-xs uppercase border-b border-slate-200">
+                        <tr>
+                            <th class="py-3.5 px-5 font-bold">Programme</th>
+                            <th class="py-3.5 px-4 font-bold">Application Deadline (HKT)</th>
+                            <th class="py-3.5 px-3 text-center font-bold">S1</th>
+                            <th class="py-3.5 px-3 text-center font-bold">S2</th>
+                            <th class="py-3.5 px-3 text-center font-bold">S3</th>
+                            <th class="py-3.5 px-3 text-center font-bold">S4</th>
+                            <th class="py-3.5 px-3 text-center font-bold">S5</th>
+                            <th class="py-3.5 px-3 text-center font-bold">S6</th>
+                            <th class="py-3.5 px-5 text-right font-bold">Action</th>
+                        </tr>
+                    </thead>
+            <tbody class="divide-y divide-slate-200">
+                            <!-- 動態遍歷 programmeMap (entry.key 是 Programme，entry.value 是該課程的 S1-S6 列表) -->
+                            <tr th:each="entry : ${programmeMap}" class="hover:bg-slate-50/80 transition">
+                            <!-- 課程名稱 -->
+                            <td class="py-4 px-5 font-bold text-slate-900">
+                                <span th:text="${entry.key.name}">HKDSE Programme</span>
+                            </td>
+
+                    <!-- 截止日期與狀態標籤 -->
+                    <td class="py-4 px-4">
+                        <div class="font-mono text-xs font-semibold text-slate-800"
+                            th:text="${#temporals.format(entry.key.applicationDeadline, 'yyyy-MM-dd HH:mm')}">
+                            2026-12-15 23:59
+                    </div>
+                    <span th:if="${entry.key.applicationDeadline.isAfter(nowHkt)}"
+                         class="inline-block mt-1 text-[11px] font-semibold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                            Open
+                    </span>
+                        <span th:unless="${entry.key.applicationDeadline.isAfter(nowHkt)}"
+                            class="inline-block mt-1 text-[11px] font-semibold bg-red-100 text-red-700 px-2 py-0.5 rounded">
+                            Deadline Passed
+                        </span>
+                    </td>
+
+                    <!-- S1 到 S6 各年級名額上限 -->
+                    <td th:each="lvl : ${entry.value}" class="py-4 px-3 text-center font-mono text-slate-700">
+                        <span class="inline-block bg-slate-100 px-2.5 py-1 rounded font-semibold"
+                        th:text="${lvl.seatLimit}">40</span>
+                    </td>
+
+                    <!-- Apply 入口按鈕 -->
+                    <td class="py-4 px-5 text-right">
+                        <a th:if="${entry.key.applicationDeadline.isAfter(nowHkt)}"
+                        th:href="@{/applications/new(programmeId=${entry.key.id})}"
+                        class="inline-block bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">
+                        Apply Now
+                        </a>
+                        <button th:unless="${entry.key.applicationDeadline.isAfter(nowHkt)}"
+                        disabled
+                        class="inline-block bg-slate-200 text-slate-400 font-semibold text-xs px-4 py-2 rounded-lg cursor-not-allowed">
+                        Closed
+                        </button>
+                    </td>
+        </tr>
+
+    <!-- 若資料庫尚未初始化資料時的預設提示 -->
+    <tr th:if="${#maps.isEmpty(programmeMap)}">
+        <td colspan="9" class="py-8 text-center text-slate-400 text-sm">
+            No programme quota records found in database. Please run <code>data.sql</code>.
+        </td>
+    </tr>
+            </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 區塊 2: 各課程入學要求 (Entry Requirements) -->
+        <section class="grid md:grid-cols-2 gap-8">
+            <!-- HKDSE 入學要求 -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                <div class="border-b border-slate-100 pb-3">
+                    <span class="text-xs font-bold text-blue-700 uppercase">Entry Criteria</span>
+                    <h3 class="text-xl font-bold text-slate-900 mt-0.5">HKDSE Programme Requirements</h3>
+                </div>
+                <ul class="space-y-3 text-sm text-slate-600">
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-blue-600 font-bold mt-0.5">&bull;</span>
+                        <span><strong>Academic Standing:</strong> Satisfactory academic performance in the previous two school years, with at least Grade B / Level 4 equivalent in English, Chinese, and Mathematics.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-blue-600 font-bold mt-0.5">&bull;</span>
+                        <span><strong>Entrance Assessment:</strong> Written placement tests in English Language and Mathematics (applicable to S1–S5 transfers).</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-blue-600 font-bold mt-0.5">&bull;</span>
+                        <span><strong>Admission Interview:</strong> Individual bilingual interview assessing communication skills, conduct, and alignment with CIS school values.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- IB Programme 入學要求 -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+                <div class="border-b border-slate-100 pb-3">
+                    <span class="text-xs font-bold text-amber-600 uppercase">Entry Criteria</span>
+                    <h3 class="text-xl font-bold text-slate-900 mt-0.5">IB Programme Requirements</h3>
+                </div>
+                <ul class="space-y-3 text-sm text-slate-600">
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-amber-600 font-bold mt-0.5">&bull;</span>
+                        <span><strong>Academic Standing:</strong> Strong academic transcripts demonstrating analytical and inquiry skills across languages, sciences, and mathematics.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-amber-600 font-bold mt-0.5">&bull;</span>
+                        <span><strong>English Proficiency:</strong> High proficiency in academic English writing and comprehension (CEFR B2 / IELTS 6.0 equivalent for senior entry).</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-amber-600 font-bold mt-0.5">&bull;</span>
+                        <span><strong>Admission Interview:</strong> English panel interview and critical-thinking portfolio review for S4–S6 Diploma applicants.</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 申請流程小提醒 -->
+        <section class="bg-blue-50 border border-blue-200 rounded-xl p-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="text-sm text-blue-900">
+                <strong>First-time applicant?</strong> You must register a CIS Membership account and verify your email with a 6-digit OTP code before submitting an online application.
+            </div>
+            <a th:href="@{/register}" class="shrink-0 bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition">
+                Register CIS Membership &rarr;
+            </a>
+        </section>
+
+    </main>
+
+    <!-- 共用頁尾 -->
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
 </body>
 </html>

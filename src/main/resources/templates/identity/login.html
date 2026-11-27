@@ -2,14 +2,98 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Sign In</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - CIS School Admission System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <form th:action="@{/login}" method="post">
-        <label>Email <input type="email" name="email" autocomplete="username" required></label>
-        <label>Password <input type="password" name="password" autocomplete="current-password" required></label>
-        <button type="submit">Sign in</button>
-        <p th:if="${param.error}">Unable to sign in with those credentials.</p>
-    </form>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 共用導航列 -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <!-- 主內容區 -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="max-w-md w-full bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+            
+            <!-- 標題 -->
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-slate-900 text-amber-400 rounded-xl flex items-center justify-center mx-auto mb-3 font-extrabold text-lg">
+                    CIS
+                </div>
+                <h1 class="text-2xl font-extrabold text-slate-900">Sign In to SAS</h1>
+                <p class="text-sm text-slate-500 mt-1">
+                    Shared portal for CIS Members &amp; Admissions Administrators (AR01)
+                </p>
+            </div>
+
+            <!-- 驗證成功提示 (由 U07 驗證成功後跳轉過來) -->
+            <div th:if="${param.verified}" class="mb-5 p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-start gap-2">
+                <span class="font-bold">&#10003;</span>
+                <span>Email verified successfully! Your member profile is now active. Please sign in.</span>
+            </div>
+
+            <!-- 登出成功提示 -->
+            <div th:if="${param.logout}" class="mb-5 p-3.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-sm">
+                You have been signed out safely.
+            </div>
+
+            <!-- 登入失敗提示 (支援 Spring Security 的 ?error 參數或 Controller 傳入的 error 變數) -->
+            <div th:if="${param.error != null or error != null}" class="mb-5 p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2">
+                <span class="font-bold">!</span>
+                <span th:text="${error != null ? error : 'Invalid email or password, or your email address has not been verified yet.'}">
+                    Invalid email or password.
+                </span>
+            </div>
+
+            <!-- 登入表單 (注意：Spring Security 預設接收 username 與 password，可在 SecurityConfig 設 .usernameParameter("email")) -->
+            <form th:action="@{/login}" method="post" class="space-y-4">
+                
+                <!-- 電郵地址 -->
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-slate-700 mb-1">
+                        Email Address
+                    </label>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           required
+                           autofocus
+                           placeholder="name@example.com"
+                           class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600" />
+                </div>
+
+                <!-- 密碼 -->
+                <div>
+                    <label for="password" class="block text-sm font-semibold text-slate-700 mb-1">
+                        Password
+                    </label>
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           required
+                           placeholder="Enter your password"
+                           class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600" />
+                </div>
+
+                <!-- 提交按鈕 -->
+                <div class="pt-2">
+                    <button type="submit"
+                            class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-lg shadow-sm transition duration-150">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+
+            <!-- 尚未註冊連結 -->
+            <div class="mt-6 pt-5 border-t border-slate-100 text-center text-sm text-slate-500">
+                New applicant without an account?
+                <a th:href="@{/register}" class="text-blue-600 hover:underline font-semibold">Register CIS Membership</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- 共用頁尾 -->
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
 </body>
 </html>

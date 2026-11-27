@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
@@ -17,5 +18,138 @@
     </div>
 </main>
 <div th:replace="~{fragments/footer :: footer}"></div>
+=======
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secondary School Programmes - Christian International School (CIS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 共用導航列 -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <!-- 頁面標題橫幅 -->
+    <header class="bg-slate-900 text-white py-12 px-4 border-b border-slate-800">
+        <div class="max-w-6xl mx-auto">
+            <span class="text-amber-400 font-bold text-xs uppercase tracking-wider">Academic Pathways (S1 – S6)</span>
+            <h1 class="text-3xl font-extrabold mt-1">CIS Secondary School Programmes</h1>
+            <p class="text-slate-300 max-w-2xl mt-2 text-sm leading-relaxed">
+                CIS offers a structured six-year secondary curriculum (S1–S6) with two internationally recognized graduation pathways tailored to diverse university aspirations.
+            </p>
+        </div>
+    </header>
+
+    <!-- 主內容區 -->
+    <main class="max-w-6xl mx-auto px-4 py-10 flex-grow space-y-10">
+
+        <!-- 學制階段總覽 (Junior vs Senior Secondary) -->
+        <section class="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-4">Two-Stage Secondary Progression</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-5">
+                    <span class="inline-block bg-slate-800 text-white text-xs font-bold px-2.5 py-0.5 rounded mb-2">Stage 1: S1 – S3</span>
+                    <h3 class="font-bold text-lg text-slate-900">Junior Secondary Foundation</h3>
+                    <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+                        Builds core competencies across English, Chinese, Mathematics, Integrated Sciences, Humanities, and Coding, preparing students for smooth transition into either DSE or IB streams.
+                    </p>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-5">
+                    <span class="inline-block bg-amber-500 text-slate-900 text-xs font-bold px-2.5 py-0.5 rounded mb-2">Stage 2: S4 – S6</span>
+                    <h3 class="font-bold text-lg text-slate-900">Senior Secondary Specialization</h3>
+                    <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+                        Students specialize in either the <strong>HKDSE Programme</strong> or the <strong>IB Programme</strong>, supported by dedicated university guidance counselors for Hong Kong, UK, US, and global admissions.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 兩大核心課程體系對比卡片 -->
+        <section class="grid lg:grid-cols-2 gap-8">
+
+            <!-- 課程 1: HKDSE Programme -->
+            <div class="bg-white rounded-xl border-2 border-blue-900/15 shadow-sm overflow-hidden flex flex-col">
+                <div class="bg-blue-950 text-white p-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="bg-blue-500/30 text-blue-200 text-xs font-semibold px-2.5 py-0.5 rounded">Local &amp; International Recognition</span>
+                        <span class="text-xs font-mono text-blue-300">S1 – S6 Track</span>
+                    </div>
+                    <h2 class="text-2xl font-extrabold">HKDSE Programme</h2>
+                    <p class="text-blue-200 text-xs mt-1">Hong Kong Diploma of Secondary Education</p>
+                </div>
+
+                <div class="p-6 flex-grow space-y-4 text-sm text-slate-600">
+                    <p class="leading-relaxed">
+                        Designed for students seeking strong bilingual proficiency and direct JUPAS admission to Hong Kong's UGC-funded universities as well as overseas institutions.
+                    </p>
+                    <ul class="space-y-2 border-t border-slate-100 pt-4">
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 font-bold">&#10003;</span>
+                            <span><strong>Core Subjects:</strong> English Language, Chinese Language, Mathematics, Citizenship and Social Development.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 font-bold">&#10003;</span>
+                            <span><strong>Elective Flexibility:</strong> Select 2 to 3 electives across STEM, Business, and Humanities.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 font-bold">&#10003;</span>
+                            <span><strong>Medium of Instruction:</strong> English (except Chinese Language &amp; Chinese History).</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+                    <a th:href="@{/school/courses}" class="text-blue-700 hover:underline text-sm font-semibold">View Course Descriptions &rarr;</a>
+                    <a th:href="@{/school/admission-requirements}" class="bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Check Quotas</a>
+                </div>
+            </div>
+
+            <!-- 課程 2: IB Programme -->
+            <div class="bg-white rounded-xl border-2 border-amber-500/30 shadow-sm overflow-hidden flex flex-col">
+                <div class="bg-slate-900 text-white p-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="bg-amber-500/20 text-amber-300 text-xs font-semibold px-2.5 py-0.5 rounded">Global University Pathway</span>
+                        <span class="text-xs font-mono text-amber-300">S1 – S6 Track</span>
+                    </div>
+                    <h2 class="text-2xl font-extrabold">IB Programme</h2>
+                    <p class="text-slate-300 text-xs mt-1">International Baccalaureate Middle Years &amp; Diploma Pathway</p>
+                </div>
+
+                <div class="p-6 flex-grow space-y-4 text-sm text-slate-600">
+                    <p class="leading-relaxed">
+                        An inquiry-driven international framework emphasizing critical thinking, interdisciplinary research, and global citizenship for leading universities worldwide.
+                    </p>
+                    <ul class="space-y-2 border-t border-slate-100 pt-4">
+                        <li class="flex items-start gap-2">
+                            <span class="text-amber-600 font-bold">&#10003;</span>
+                            <span><strong>Six Subject Groups:</strong> Studies in Language &amp; Literature, Language Acquisition, Individuals &amp; Societies, Sciences, Mathematics, and Arts.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-amber-600 font-bold">&#10003;</span>
+                            <span><strong>DP Core:</strong> Theory of Knowledge (TOK), Extended Essay (EE), and Creativity, Activity, Service (CAS).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-amber-600 font-bold">&#10003;</span>
+                            <span><strong>Assessment:</strong> Balanced internal coursework assessments and external examinations.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+                    <a th:href="@{/school/courses}" class="text-amber-700 hover:underline text-sm font-semibold">View Course Descriptions &rarr;</a>
+                    <a th:href="@{/school/admission-requirements}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-bold px-4 py-2 rounded-lg transition">Check Quotas</a>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- 共用頁尾 -->
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
+>>>>>>> origin/main
 </body>
 </html>
