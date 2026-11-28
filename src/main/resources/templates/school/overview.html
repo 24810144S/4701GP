@@ -1,26 +1,26 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${pageTitle}">學校概況 - CIS</title>
+    <title th:text="${pageTitle}">School Overview - CIS</title>
     <link rel="stylesheet" th:href="@{/css/school.css}">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <main class="container">
-    <h1>學校概況</h1>
+    <h1>School Overview</h1>
     <section>
-        <h2>學校背景</h2>
-        <p>Christian International School (CIS) 是一所位於香港的新成立國際學校，提供中一至中六高質素中學教育，致力培養學生的學術能力、品格與國際視野。</p>
+        <h2>School Background</h2>
+        <p>Christian International School (CIS) is a newly established international school in Hong Kong providing quality secondary education from S1 to S6. We are committed to developing students’ academic ability, character and international perspective.</p>
     </section>
     <section>
-        <h2>位置地圖</h2>
+        <h2>Location Map</h2>
         <div class="map-placeholder">
-            <p>（地圖圖片佔位）</p>
+            <p>(Map image placeholder)</p>
         </div>
     </section>
     <section>
-        <h2>教師資料</h2>
+        <h2>Teaching Staff</h2>
         <div class="teacher-list">
             <div th:each="teacher : ${teachers}" class="teacher-card">
                 <h3 th:text="${teacher.name}"></h3>

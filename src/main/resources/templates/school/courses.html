@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<<<<<<< HEAD
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${pageTitle}">課程說明 - CIS</title>
+    <title th:text="${pageTitle}">Course Descriptions - CIS</title>
     <link rel="stylesheet" th:href="@{/css/school.css}">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <main class="container">
-    <h1>各課程內容說明</h1>
+    <h1>Course Content Descriptions</h1>
     <div class="course-list">
         <div th:each="course : ${courses}" class="course-item">
             <h3 th:text="${course.level}"></h3>
@@ -18,156 +17,5 @@
     </div>
 </main>
 <div th:replace="~{fragments/footer :: footer}"></div>
-=======
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Descriptions - Christian International School (CIS)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
-
-    <!-- 共用導航列 -->
-    <div th:replace="~{fragments/layout :: navbar}"></div>
-
-    <!-- 頁面標題橫幅 -->
-    <header class="bg-slate-900 text-white py-12 px-4 border-b border-slate-800">
-        <div class="max-w-6xl mx-auto">
-            <span class="text-amber-400 font-bold text-xs uppercase tracking-wider">Curriculum &amp; Syllabi</span>
-            <h1 class="text-3xl font-extrabold mt-1">Course Descriptions by Programme</h1>
-            <p class="text-slate-300 max-w-2xl mt-2 text-sm leading-relaxed">
-                Detailed subject outlines and academic modules offered under the HKDSE and IB programmes across junior (S1–S3) and senior (S4–S6) secondary levels.
-            </p>
-        </div>
-    </header>
-
-    <!-- 主內容區 -->
-    <main class="max-w-6xl mx-auto px-4 py-10 flex-grow space-y-12">
-
-        <!-- 區塊 1: HKDSE Programme 課程說明 -->
-        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="bg-blue-950 text-white px-6 py-4 flex flex-wrap justify-between items-center gap-2">
-                <div>
-                    <h2 class="text-xl font-bold">1. HKDSE Programme — Course Outlines</h2>
-                    <p class="text-blue-200 text-xs">Core &amp; Elective Subject Descriptions (S1–S6)</p>
-                </div>
-                <a th:href="@{/school/admission-requirements}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-bold px-3.5 py-1.5 rounded transition">
-                    Apply for HKDSE
-                </a>
-            </div>
-
-            <div class="p-6 divide-y divide-slate-100">
-                <!-- 科目 1 -->
-                <div class="py-4 first:pt-0">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded">Core</span>
-                        <h3 class="font-bold text-base text-slate-900">English Language &amp; Literature (DSE-ENG)</h3>
-                    </div>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Develops advanced academic reading, argumentative writing, listening, and public speaking skills. Includes School-Based Assessment (SBA) modules on literary texts and contemporary media.
-                    </p>
-                </div>
-
-                <!-- 科目 2 -->
-                <div class="py-4">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded">Core</span>
-                        <h3 class="font-bold text-base text-slate-900">Chinese Language &amp; Cultural Studies (DSE-CHI)</h3>
-                    </div>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Covers classical Chinese prose, modern literature analysis, practical writing, and oral communication, strengthening bilingual fluency and cultural literacy.
-                    </p>
-                </div>
-
-                <!-- 科目 3 -->
-                <div class="py-4">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded">Core + Extended</span>
-                        <h3 class="font-bold text-base text-slate-900">Mathematics &amp; Calculus / Statistics M1 &amp; M2 (DSE-MAT)</h3>
-                    </div>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Compulsory part spans algebra, geometry, trigonometry, and probability. Senior students may take Extended Part Module 1 (Calculus &amp; Statistics) or Module 2 (Algebra &amp; Calculus).
-                    </p>
-                </div>
-
-                <!-- 科目 4 -->
-                <div class="py-4 last:pb-0">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="bg-slate-200 text-slate-700 text-xs font-bold px-2 py-0.5 rounded">Electives</span>
-                        <h3 class="font-bold text-base text-slate-900">STEM Sciences, ICT &amp; Humanities Electives</h3>
-                    </div>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Students select 2–3 electives from Physics, Chemistry, Biology, Information &amp; Communication Technology (ICT), Economics, Business Accounting &amp; Financial Studies (BAFS), and World History.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 區塊 2: IB Programme 課程說明 -->
-        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="bg-slate-900 text-white px-6 py-4 flex flex-wrap justify-between items-center gap-2">
-                <div>
-                    <h2 class="text-xl font-bold">2. IB Programme — Course Outlines</h2>
-                    <p class="text-slate-300 text-xs">IB Subject Groups &amp; Diploma Core (S1–S6)</p>
-                </div>
-                <a th:href="@{/school/admission-requirements}" class="bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-bold px-3.5 py-1.5 rounded transition">
-                    Apply for IB
-                </a>
-            </div>
-
-            <div class="p-6 divide-y divide-slate-100">
-                <!-- 科目組 1 -->
-                <div class="py-4 first:pt-0">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded">Group 1 &amp; 2</span>
-                        <h3 class="font-bold text-base text-slate-900">Studies in Language &amp; Literature / Language Acquisition</h3>
-                    </div>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Offered at Higher Level (HL) and Standard Level (SL) in English A: Literature, Chinese A: Language &amp; Literature, and French/Spanish B, fostering critical literary appreciation.
-                    </p>
-                </div>
-
-                <!-- 科目組 2 -->
-                <div class="py-4">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded">Group 3 &amp; 4</span>
-                        <h3 class="font-bold text-base text-slate-900">Individuals &amp; Societies / Experimental Sciences</h3>
-                    </div>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Includes Economics, Global Politics, Psychology, Physics, Chemistry, Biology, and Computer Science. Incorporates laboratory Internal Assessments (IA) and collaborative science projects.
-                    </p>
-                </div>
-
-                <!-- 科目組 3 -->
-                <div class="py-4">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded">Group 5 &amp; 6</span>
-                        <h3 class="font-bold text-base text-slate-900">Mathematics (AA / AI) &amp; Visual Arts / Music</h3>
-                    </div>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Offers Mathematics: Analysis and Approaches (AA) for theoretical/STEM tracks and Applications and Interpretation (AI) for data-driven modeling, alongside Visual Arts and Music.
-                    </p>
-                </div>
-
-                <!-- IB 核心 -->
-                <div class="py-4 last:pb-0">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded">IB Core</span>
-                        <h3 class="font-bold text-base text-slate-900">Theory of Knowledge (TOK), Extended Essay (EE) &amp; CAS</h3>
-                    </div>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Mandatory core components cultivating epistemology inquiry (TOK), a 4,000-word independent academic research paper (EE), and experiential community service (CAS).
-                    </p>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- 共用頁尾 -->
-    <div th:replace="~{fragments/layout :: footer}"></div>
-
->>>>>>> origin/main
 </body>
 </html>

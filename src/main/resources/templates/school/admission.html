@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${pageTitle}">入學要求 - CIS</title>
+    <title th:text="${pageTitle}">Admission Requirements - CIS</title>
     <link rel="stylesheet" th:href="@{/css/school.css}">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <main class="container">
-    <h1>入學要求及申請截止日期</h1>
+    <h1>Admission Requirements and Application Deadlines</h1>
     <section>
-        <h2>各課程入學要求</h2>
+        <h2>Admission Requirements by Programme</h2>
         <table class="info-table">
             <thead>
-            <tr><th>課程</th><th>申請截止日期</th><th>入學要求</th></tr>
+            <tr><th>Programme</th><th>Application Deadline</th><th>Admission Requirements</th></tr>
             </thead>
             <tbody>
             <tr th:each="info : ${admissionInfo}">
@@ -25,10 +25,10 @@
         </table>
     </section>
     <section>
-        <h2>各年級名額上限（S1–S6）</h2>
+        <h2>Seat Limits by Level (S1–S6)</h2>
         <table class="seat-table">
             <thead>
-            <tr><th>年級</th><th>DSE 名額</th><th>IB 名額</th></tr>
+            <tr><th>Level</th><th>DSE Seats</th><th>IB Seats</th></tr>
             </thead>
             <tbody>
             <tr th:each="row : ${seatTable}">
@@ -40,7 +40,7 @@
         </table>
     </section>
     <section class="apply-section">
-        <a th:href="@{/login}" class="btn-apply">Apply / 申請入學</a>
+        <a th:href="@{/login}" class="btn-apply">Apply Now</a>
     </section>
 </main>
 <div th:replace="~{fragments/footer :: footer}"></div>
