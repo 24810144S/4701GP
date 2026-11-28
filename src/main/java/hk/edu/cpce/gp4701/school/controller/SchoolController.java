@@ -19,6 +19,13 @@ public class SchoolController {
         return "school/overview";
     }
 
+    @GetMapping("/school/about")
+    public String about(Model model) {
+        model.addAttribute("pageTitle", "School Overview");
+        model.addAttribute("teachers", schoolService.getTeachers());
+        return "school/overview";
+    }
+
     @GetMapping("/school/facilities")
     public String facilities(Model model) {
         model.addAttribute("pageTitle", "School Facilities");
@@ -42,6 +49,14 @@ public class SchoolController {
 
     @GetMapping("/school/admission")
     public String admission(Model model) {
+        model.addAttribute("pageTitle", "Admission Requirements");
+        model.addAttribute("admissionInfo", schoolService.getAdmissionRequirements());
+        model.addAttribute("seatTable", schoolService.getSeatTable());
+        return "school/admission";
+    }
+
+    @GetMapping("/school/admission-requirements")
+    public String admissionRequirements(Model model) {
         model.addAttribute("pageTitle", "Admission Requirements");
         model.addAttribute("admissionInfo", schoolService.getAdmissionRequirements());
         model.addAttribute("seatTable", schoolService.getSeatTable());
