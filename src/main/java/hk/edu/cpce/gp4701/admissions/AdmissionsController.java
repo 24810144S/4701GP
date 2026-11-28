@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import hk.edu.cpce.gp4701.application.AdmissionApplicationRepository;
+import hk.edu.cpce.gp4701.identity.AccountRepository;
 import hk.edu.cpce.gp4701.model.AdmissionApplication;
 import hk.edu.cpce.gp4701.model.Programme;
 import hk.edu.cpce.gp4701.model.ProgrammeLevel;
@@ -32,11 +33,14 @@ public class AdmissionsController {
 
     private final AdmissionApplicationRepository applicationRepository;
     private final ProgrammeLevelRepository programmeLevelRepository;
+    private final AccountRepository accountRepository;
 
     public AdmissionsController(AdmissionApplicationRepository applicationRepository,
-                                ProgrammeLevelRepository programmeLevelRepository) {
+                                ProgrammeLevelRepository programmeLevelRepository,
+                                AccountRepository accountRepository) {
         this.applicationRepository = applicationRepository;
         this.programmeLevelRepository = programmeLevelRepository;
+        this.accountRepository = accountRepository;
     }
 
     @GetMapping
@@ -72,6 +76,7 @@ public class AdmissionsController {
         model.addAttribute("quotaStats", quotaStats);
         model.addAttribute("programmes", new ArrayList<>(programmeMap.values()));
         model.addAttribute("applications", applications);
+        model.addAttribute("members", accountRepository.findByRoleOrderByIdDesc("MEMBER"));
         model.addAttribute("filterProgrammeId", programmeId);
         model.addAttribute("filterLevel", level);
         model.addAttribute("filterStatus", status);
