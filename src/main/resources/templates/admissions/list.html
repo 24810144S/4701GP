@@ -113,9 +113,9 @@
                     <select id="status" name="status" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
                         <option value="">All Applications</option>
                         <option value="UNPUBLISHED" th:selected="${filterStatus == 'UNPUBLISHED'}">Unpublished Only</option>
-                        <option value="Success" th:selected="${filterStatus == 'Success'}">Success</option>
-                        <option value="Wait" th:selected="${filterStatus == 'Wait'}">Wait (Waitlist)</option>
-                        <option value="Fail" th:selected="${filterStatus == 'Fail'}">Fail</option>
+                        <option value="Success" th:selected="${#strings.equalsIgnoreCase(app.decision, 'SUCCESS')}">Success</option>
+                        <option value="Wait" th:selected="${#strings.equalsIgnoreCase(app.decision, 'WAIT')}">Wait</option>
+                        <option value="Fail" th:selected="${#strings.equalsIgnoreCase(app.decision, 'FAIL')}">Fail</option>
                     </select>
                 </div>
 
