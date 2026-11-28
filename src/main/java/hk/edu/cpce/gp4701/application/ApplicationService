@@ -76,3 +76,88 @@ public class ApplicationService {
         applicationRepository.save(app);
     }
 }
+package hk.edu.cpce.gp4701.application;
+
+import hk.edu.cpce.gp4701.model.Account;
+import hk.edu.cpce.gp4701.model.AdmissionApplication;
+import hk.edu.cpce.gp4701.model.ProgrammeLevel;
+import hk.edu.cpce.gp4701.model.repository.ProgrammeLevelRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+
+@Service
+public class ApplicationService {
+
+    private final ApplicationRepository applicationRepository;
+    private final ProgrammeLevelRepository programmeLevelRepository;
+
+    public ApplicationService(ApplicationRepository applicationRepository,
+                              ProgrammeLevelRepository programmeLevelRepository) {
+        this.applicationRepository = applicationRepository;
+        this.programmeLevelRepository = programmeLevelRepository;
+    }
+
+    public List<AdmissionApplication> getApplicationsByMember(Long memberId) {
+        return applicationRepository.findByMemberId(memberId);
+    }
+
+    public AdmissionApplication getApplicationById(Long id) {
+        return applicationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found."));
+    }
+
+    @Transactional
+    public AdmissionApplication submitApplication(Account member, Long programmeId, Integer level) throws Exception {
+        // Find matching target ProgrammeLevel in the database
+        ProgrammeLevel progLevel = programmeLevelRepository.findAll().stream()
+                .filter(pl -> pl.getProgramme().getId().equals(programmeId) && pl.getLevel().equals(level))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No admission seats are offered for this specific program and level."));
+
+        // BR04: Check application deadline using Hong Kong Time
+        LocalDateTime nowHK = LocalDateTime.now(ZoneId.of("Asia/Hong_Kong"));
+        if (nowHK.isAfter(progLevel.getProgramme().getApplicationDeadline())) {
+            throw new IllegalStateException("Submission rejected: The application deadline for this program has passed.");
+        }
+
+        // Check for duplicate application entries
+        if (applicationRepository.existsByMemberIdAndProgrammeLevelId(member.getId(), progLevel.getId())) {
+            throw new IllegalStateException("Duplicate Application: You have already submitted an application for this program and level.");
+        }
+
+        AdmissionApplication application = new AdmissionApplication();
+        application.setMemberId(member.getId());
+        application.setProgrammeLevel(progLevel);
+        application.setSubmittedAt(nowHK);
+        application.setDecision(null);        // Initial state is un-reviewed
+        application.setPublishedAt(null);      // Unpublished initially
+        application.setOfferResponse(null);    // No candidate response yet
+        application.setRespondedAt(null);
+
+        return applicationRepository.save(application);
+    }
+
+    @Transactional
+    public void recordOfferResponse(Long id, Long memberId, String response) {
+        AdmissionApplication app = getApplicationById(id);
+        if (!app.getMemberId().equals(memberId)) {
+            throw new SecurityException("Access Denied: You do not own this application.");
+        }
+        if (app.getPublishedAt() == null || !"Success".equalsIgnoreCase(app.getDecision())) {
+            throw new IllegalStateException("No active published offer is available to respond to.");
+        }
+        if (app.getOfferResponse() != null) {
+            throw new IllegalStateException("Response locked: You have already submitted a response for this offer.");
+        }
+
+        // BR08: Save user response ("ACCEPTED" or "DECLINED") with local timestamp
+        app.setOfferResponse(response);
+        app.setRespondedAt(LocalDateTime.now(ZoneId.of("Asia/Hong_Kong")));
+        
+        applicationRepository.save(app);
+    }
+}
