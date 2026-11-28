@@ -6,41 +6,43 @@
     <link rel="stylesheet" th:href="@{/css/school.css}">
 </head>
 <body>
+<div class="header">
+    <div class="logo">CIS · Christian International School</div>
+    <div class="nav">
+        <a href="/school/about">About Us</a>
+        <a href="/school/facilities">Facilities</a>
+        <a href="/school/programmes">Programmes</a>
+        <a href="/school/courses">Courses</a>
+        <a href="/school/admission-requirements">Admission & Quotas</a>
+    </div>
+</div>
 <main class="container">
     <h1>Admission Requirements and Application Deadlines</h1>
-    <section>
-        <h2>Admission Requirements by Programme</h2>
-        <table class="info-table">
-            <thead>
-            <tr><th>Programme</th><th>Application Deadline</th><th>Admission Requirements</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="info : ${admissionInfo}">
-                <td th:text="${info.programme}"></td>
-                <td th:text="${info.deadline}"></td>
-                <td th:text="${info.requirements}"></td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
-    <section>
-        <h2>Seat Limits by Level (S1–S6)</h2>
-        <table class="seat-table">
-            <thead>
-            <tr><th>Level</th><th>DSE Seats</th><th>IB Seats</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="row : ${seatTable}">
-                <td th:text="${row.level}"></td>
-                <td th:text="${row.dseSeats}"></td>
-                <td th:text="${row.ibSeats}"></td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
-    <section class="apply-section">
+    <h2>Admission Requirements by Programme</h2>
+    <table>
+        <thead><tr><th>Programme</th><th>Application Deadline</th><th>Admission Requirements</th></tr></thead>
+        <tbody>
+        <tr th:each="info : ${admissionInfo}">
+            <td th:text="${info.programme}"></td>
+            <td th:text="${info.deadline}"></td>
+            <td th:text="${info.requirements}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <h2>Seat Limits by Level (S1–S6)</h2>
+    <table>
+        <thead><tr><th>Level</th><th>DSE Seats</th><th>IB Seats</th></tr></thead>
+        <tbody>
+        <tr th:each="row : ${seatTable}">
+            <td th:text="${row.level}"></td>
+            <td th:text="${row.dseSeats}"></td>
+            <td th:text="${row.ibSeats}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="apply-section">
         <a th:href="@{/login}" class="btn-apply">Apply Now</a>
-    </section>
+    </div>
 </main>
 </body>
 </html>

@@ -6,11 +6,21 @@
     <link rel="stylesheet" th:href="@{/css/school.css}">
 </head>
 <body>
+<div class="header">
+    <div class="logo">CIS · Christian International School</div>
+    <div class="nav">
+        <a href="/school/about">About Us</a>
+        <a href="/school/facilities">Facilities</a>
+        <a href="/school/programmes">Programmes</a>
+        <a href="/school/courses">Courses</a>
+        <a href="/school/admission-requirements">Admission & Quotas</a>
+    </div>
+</div>
 <main class="container">
     <h1>CIS Secondary School Programmes</h1>
-    <div class="programme-list">
-        <div th:each="prog : ${programmes}" class="programme-card">
-            <h2 th:text="${prog.name}"></h2>
+    <div class="card-grid">
+        <div th:each="prog : ${programmes}" class="card">
+            <h3 th:text="${prog.name}"></h3>
             <p th:text="${prog.description}"></p>
         </div>
     </div>

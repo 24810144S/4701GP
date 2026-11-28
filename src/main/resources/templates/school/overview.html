@@ -6,28 +6,27 @@
     <link rel="stylesheet" th:href="@{/css/school.css}">
 </head>
 <body>
+<div class="header">
+    <div class="logo">CIS · Christian International School</div>
+    <div class="nav">
+        <a href="/school/about">About Us</a>
+        <a href="/school/facilities">Facilities</a>
+        <a href="/school/programmes">Programmes</a>
+        <a href="/school/courses">Courses</a>
+        <a href="/school/admission-requirements">Admission & Quotas</a>
+    </div>
+</div>
 <main class="container">
     <h1>School Overview</h1>
-    <section>
-        <h2>School Background</h2>
-        <p>Christian International School (CIS) is a newly established international school in Hong Kong providing quality secondary education from S1 to S6. We are committed to developing students’ academic ability, character and international perspective.</p>
-    </section>
-    <section>
-        <h2>Location Map</h2>
-        <div class="map-placeholder">
-            <p>(Map image placeholder)</p>
+    <p>Christian International School (CIS) is a newly established international school in Hong Kong providing quality secondary education from S1 to S6.</p>
+    <h2>Teaching Staff</h2>
+    <div class="card-grid">
+        <div th:each="teacher : ${teachers}" class="card">
+            <h3 th:text="${teacher.name}"></h3>
+            <p th:text="${teacher.title}"></p>
+            <p th:text="${teacher.qualification}"></p>
         </div>
-    </section>
-    <section>
-        <h2>Teaching Staff</h2>
-        <div class="teacher-list">
-            <div th:each="teacher : ${teachers}" class="teacher-card">
-                <h3 th:text="${teacher.name}"></h3>
-                <p th:text="${teacher.title}"></p>
-                <p th:text="${teacher.qualification}"></p>
-            </div>
-        </div>
-    </section>
+    </div>
 </main>
 </body>
 </html>
