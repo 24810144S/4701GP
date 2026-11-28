@@ -13,7 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import hk.edu.cpce.gp4701.identity.AccountRepository;
 import hk.edu.cpce.gp4701.model.Account;
@@ -28,16 +30,19 @@ public class ApplicationController {
     private final AccountRepository accountRepository;
     private final ProgrammeLevelRepository programmeLevels;
     private final AdmissionApplicationRepository applicationRepository;
+    private final ApplicationService applicationService;
 
     public ApplicationController(AccountRepository accountRepository,
                                  ProgrammeLevelRepository programmeLevels,
-                                 AdmissionApplicationRepository applicationRepository) {
+                                 AdmissionApplicationRepository applicationRepository,
+                                 ApplicationService applicationService) {
         this.accountRepository = accountRepository;
         this.programmeLevels = programmeLevels;
         this.applicationRepository = applicationRepository;
+        this.applicationService = applicationService;
     }
 
-    // U10: 提交申請頁面
+    // U10: GET - Show Application Form
     @GetMapping("/applications/new")
     public String newApplication(@RequestParam(required = false) Long programmeId,
                                  Principal principal,
@@ -61,7 +66,24 @@ public class ApplicationController {
         return "application/new";
     }
 
-    // U11: 我的申請列表
+    // U10: POST - Submit Application Form
+    @PostMapping("/applications")
+    public String handleApplyForm(@RequestParam("programmeId") Long programmeId,
+                                  @RequestParam("level") Integer level,
+                                  Principal principal,
+                                  RedirectAttributes redirectAttributes) {
+        Account account = accountRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new IllegalStateException("Member not found"));
+        try {
+            applicationService.submitApplication(account, programmeId, level);
+            return "redirect:/applications?submitted=true";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/applications/new";
+        }
+    }
+
+    // U11: GET - My Applications List
     @GetMapping("/applications")
     public String myApplications(Principal principal, Model model) {
         Account member = accountRepository.findByEmail(principal.getName())
@@ -71,18 +93,46 @@ public class ApplicationController {
         return "application/list";
     }
 
-    // U12: 申請詳情與接受/拒絕頁面
+    // U12: GET - Application Detail & Offer Response Page
     @GetMapping("/applications/{id}")
     public String detail(@PathVariable Long id, Principal principal, Model model) {
         AdmissionApplication app = applicationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Application not found"));
 
-        // BR05: 確保會員只能查看自己的申請
+        // BR05: Ensure member can only view their own application
         if (!app.getMember().getEmail().equals(principal.getName())) {
             throw new SecurityException("Access denied");
         }
 
         model.addAttribute("app", app);
         return "application/detail";
+    }
+
+    // U12: POST - Accept Offer
+    @PostMapping("/applications/{id}/accept")
+    public String acceptOffer(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
+        Account account = accountRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new IllegalStateException("Member not found"));
+        try {
+            applicationService.recordOfferResponse(id, account, "ACCEPTED");
+            return "redirect:/applications/" + id + "?responded=true";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/applications/" + id;
+        }
+    }
+
+    // U12: POST - Decline Offer
+    @PostMapping("/applications/{id}/decline")
+    public String declineOffer(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
+        Account account = accountRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new IllegalStateException("Member not found"));
+        try {
+            applicationService.recordOfferResponse(id, account, "DECLINED");
+            return "redirect:/applications/" + id + "?responded=true";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/applications/" + id;
+        }
     }
 }

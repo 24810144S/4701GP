@@ -1,0 +1,13 @@
+package hk.edu.cpce.gp4701.application;
+
+import hk.edu.cpce.gp4701.model.AdmissionApplication;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface ApplicationRepository extends JpaRepository<AdmissionApplication, Long> {
+    
+    List<AdmissionApplication> findByMemberId(Long memberId);
+    
+    boolean existsByMemberIdAndProgrammeLevelId(Long memberId, Long programmeLevelId);
+}
+

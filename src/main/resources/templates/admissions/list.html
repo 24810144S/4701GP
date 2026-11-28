@@ -3,250 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admissions Workspace (Admin) - CIS School Admission System</title>
+    <title>Admissions Workspace - CIS</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- 共用導航列 -->
-    <div th:replace="~{fragments/layout :: navbar}"></div>
+<!-- Top Navigation & Hero -->
+<header class="bg-slate-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4 border-b border-slate-800">
+        <a th:href="@{/}" class="flex items-center gap-3">
+            <span class="bg-amber-400 text-slate-900 font-bold px-2.5 py-1 rounded text-sm">CIS</span>
+            <span class="font-semibold text-lg tracking-tight">Christian International School</span>
+        </a>
+        <nav class="flex flex-wrap items-center gap-5 text-sm text-slate-300">
+            <a th:href="@{/}" class="hover:text-white">About Us</a>
+            <a th:href="@{/facilities}" class="hover:text-white">Facilities</a>
+            <a th:href="@{/programmes}" class="hover:text-white">Programmes</a>
+            <a th:href="@{/courses}" class="hover:text-white">Courses</a>
+            <a th:href="@{/admission}" class="hover:text-white">Admission &amp; Quotas</a>
+        </nav>
+    </div>
 
-    <!-- 頁面標題橫幅 -->
-    <header class="bg-slate-900 text-white py-10 px-4 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3 text-sm border-b border-slate-800">
+        <a th:href="@{/admin/admissions}" class="bg-blue-600 text-white font-medium px-3.5 py-1.5 rounded-lg">Admissions Workspace</a>
+        <form th:action="@{/logout}" method="post" class="inline">
+            <button type="submit" class="bg-slate-700 hover:bg-slate-600 text-white px-3.5 py-1.5 rounded-lg">Logout</button>
+        </form>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div>
+            <p class="text-xs font-semibold tracking-wider text-amber-400 uppercase">Admissions Administrator Portal (FR07 / FR08)</p>
+            <h1 class="text-3xl font-bold mt-1">Admissions Review &amp; Publication Workspace</h1>
+            <p class="text-slate-300 text-sm mt-2">
+                Review applications, enforce S1–S6 seat limits (BR07), promote waitlisted candidates (BR09), and publish results (BR06).
+            </p>
+        </div>
+        <form th:action="@{/admin/admissions/publish-all}" method="post">
+            <button type="submit"
+                    onclick="return confirm('Publish all unpublished applications that have saved decisions?')"
+                    class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-semibold px-5 py-3 rounded-lg shadow transition">
+                Publish All Saved Results &rarr;
+            </button>
+        </form>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto w-full px-4 py-8 flex-grow space-y-8">
+
+    <!-- Flash Messages -->
+    <div th:if="${success}" class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+        <span>&#10003;</span>
+        <span th:text="${success}">Success message</span>
+    </div>
+    <div th:if="${error}" class="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+        <span>&#9888;</span>
+        <span th:text="${error}">Error message</span>
+    </div>
+
+    <!-- 1. Live Seat Quota Monitor -->
+    <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900">1. Live Seat Quota &amp; Availability Monitor (BR07 / BR09)</h2>
+        <p class="text-xs text-slate-500 mt-1">
+            Occupied seats count active Success offers (excluding Declined offers, which automatically release seats).
+        </p>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+            <div th:each="stat : ${quotaStats}" class="border border-slate-200 rounded-lg p-4 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-blue-700" th:text="${stat.programmeName}">CIS Demo Programme</p>
+                    <p class="text-sm font-bold text-slate-900 mt-0.5" th:text="'Secondary ' + ${stat.level} + ' (S' + ${stat.level} + ')'">Secondary 1 (S1)</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-600">
+                        Occupied: <strong class="text-slate-900" th:text="${stat.occupied}">0</strong> / <span th:text="${stat.seatLimit}">30</span>
+                    </p>
+                    <span class="inline-block mt-1 px-2 py-0.5 rounded text-xs font-semibold"
+                          th:with="left=${stat.seatLimit - stat.occupied}"
+                          th:classappend="${left > 0} ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'"
+                          th:text="${left} + ' seats left'">
+                        30 seats left
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Filter Bar -->
+    <section class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <form th:action="@{/admin/admissions}" method="get" class="grid sm:grid-cols-4 gap-4 items-end">
             <div>
-                <span class="text-amber-400 font-bold text-xs uppercase tracking-wider">Admissions Administrator Portal (FR07 / FR08)</span>
-                <h1 class="text-2xl sm:text-3xl font-extrabold mt-1">Admissions Review &amp; Publication Workspace</h1>
-                <p class="text-slate-300 text-sm mt-1">
-                    Review applications, enforce S1–S6 seat limits (BR07), promote waitlisted candidates (BR09), and publish results (BR06).
-                </p>
+                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Programme</label>
+                <select name="programmeId" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                    <option value="">All Programmes</option>
+                    <option th:each="p : ${programmes}"
+                            th:value="${p.id}"
+                            th:text="${p.name}"
+                            th:selected="${filterProgrammeId != null and filterProgrammeId == p.id}">
+                    </option>
+                </select>
             </div>
 
-            <!-- 批次公布所有已儲存但尚未公布的審核結果 (BR06 / BR10) -->
-            <form th:action="@{/admin/admissions/publish-all}" method="post"
-                  onsubmit="return confirm('Publish all saved decisions now? Applicants will immediately see their results and receive notification emails (BR06 / BR10).');">
-                <button type="submit"
-                        class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-lg shadow-sm transition">
-                    Publish All Saved Results &rarr;
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Level (S1–S6)</label>
+                <select name="level" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                    <option value="">All Levels</option>
+                    <option th:each="lvl : ${#numbers.sequence(1, 6)}"
+                            th:value="${lvl}"
+                            th:text="'Secondary ' + ${lvl} + ' (S' + ${lvl} + ')'"
+                            th:selected="${filterLevel != null and filterLevel == lvl}">
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Decision / Publish Status</label>
+                <select name="status" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                    <option value="">All Applications</option>
+                    <option value="UNPUBLISHED" th:selected="${filterStatus == 'UNPUBLISHED'}">Unpublished Only</option>
+                    <option value="SUCCESS" th:selected="${filterStatus == 'SUCCESS'}">Success</option>
+                    <option value="WAIT" th:selected="${filterStatus == 'WAIT'}">Wait</option>
+                    <option value="FAIL" th:selected="${filterStatus == 'FAIL'}">Fail</option>
+                </select>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 px-4 rounded-lg text-sm">
+                    Filter
                 </button>
-            </form>
-        </div>
-    </header>
-
-    <!-- 主內容區 -->
-    <main class="max-w-7xl mx-auto w-full px-4 py-8 flex-grow space-y-8">
-
-        <!-- 操作成功 / 錯誤提示框 -->
-        <div th:if="${success}" class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-sm flex items-center gap-2.5">
-            <span class="font-bold">&#10003;</span>
-            <span th:text="${success}">Decision saved successfully.</span>
-        </div>
-
-        <div th:if="${error}" class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2.5">
-            <span class="font-bold">!</span>
-            <span th:text="${error}">Seat limit exceeded for this programme level (BR07).</span>
-        </div>
-
-        <!-- 區塊 1: S1–S6 即時名額使用率與剩餘名額看板 (BR07 / BR09) -->
-        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="px-6 py-4 bg-slate-100/80 border-b border-slate-200 flex justify-between items-center">
-                <div>
-                    <h2 class="text-base font-bold text-slate-900">1. Live Seat Quota &amp; Availability Monitor (BR07 / BR09)</h2>
-                    <p class="text-xs text-slate-500">Occupied seats count active Success offers (excluding Declined offers, which automatically release seats).</p>
-                </div>
+                <a th:href="@{/admin/admissions}" class="px-3 py-2 text-sm text-slate-600 hover:text-slate-900">
+                    Reset
+                </a>
             </div>
+        </form>
+    </section>
 
-            <div class="p-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-4" th:if="${not #lists.isEmpty(quotaStats)}">
-                <div th:each="stat : ${quotaStats}" class="p-4 rounded-lg border border-slate-200 bg-slate-50/60 flex justify-between items-center">
-                    <div>
-                        <span class="text-xs font-bold text-blue-800 block" th:text="${stat.programmeName}">HKDSE Programme</span>
-                        <span class="text-sm font-extrabold text-slate-900">Secondary <span th:text="${stat.level}">1</span> (S<span th:text="${stat.level}">1</span>)</span>
-                    </div>
-                    <div class="text-right font-mono">
-                        <div class="text-xs text-slate-500">
-                            Occupied: <strong class="text-slate-900" th:text="${stat.occupied}">12</strong> / <span th:text="${stat.seatLimit}">40</span>
-                        </div>
-                        <span th:if="${stat.remaining > 0}"
-                              class="inline-block mt-1 text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
-                            <span th:text="${stat.remaining}">28</span> seats left
-                        </span>
-                        <span th:unless="${stat.remaining > 0}"
-                              class="inline-block mt-1 text-xs font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded">
-                            FULL (0 left)
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <!-- 3. Applications Table -->
+    <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
+                        <th class="py-3.5 px-4">ID &amp; Submitted</th>
+                        <th class="py-3.5 px-4">Applicant Info</th>
+                        <th class="py-3.5 px-4">Programme &amp; Level</th>
+                        <th class="py-3.5 px-4">Publication</th>
+                        <th class="py-3.5 px-4">Offer Response</th>
+                        <th class="py-3.5 px-4">Review Decision (Save)</th>
+                        <th class="py-3.5 px-4 text-right">Publish</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm">
+                    <tr th:if="${#lists.isEmpty(applications)}">
+                        <td colspan="7" class="py-10 text-center text-slate-500">
+                            No admission applications match the current filter criteria.
+                        </td>
+                    </tr>
 
-        <!-- 區塊 2: 篩選條件列 -->
-        <section class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
-            <form th:action="@{/admin/admissions}" method="get" class="grid sm:grid-cols-4 gap-4 items-end">
-                <div>
-                    <label for="programmeId" class="block text-xs font-bold uppercase text-slate-500 mb-1">Programme</label>
-                    <select id="programmeId" name="programmeId" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
-                        <option value="">All Programmes</option>
-                        <option th:each="prog : ${programmes}"
-                                th:value="${prog.id}"
-                                th:text="${prog.name}"
-                                th:selected="${filterProgrammeId != null and filterProgrammeId == prog.id}">
-                            HKDSE Programme
-                        </option>
-                    </select>
-                </div>
+                    <tr th:each="app : ${applications}" class="hover:bg-slate-50/70">
+                        <td class="py-4 px-4 align-top">
+                            <div class="font-bold text-slate-900" th:text="'#' + ${app.id}">#1</div>
+                            <div class="text-xs text-slate-500 mt-0.5"
+                                 th:text="${app.submittedAt != null ? #temporals.format(app.submittedAt, 'yyyy-MM-dd HH:mm') : '—'}">
+                                2026-11-28 16:57
+                            </div>
+                        </td>
 
-                <div>
-                    <label for="level" class="block text-xs font-bold uppercase text-slate-500 mb-1">Level (S1–S6)</label>
-                    <select id="level" name="level" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
-                        <option value="">All Levels</option>
-                        <option th:each="lvl : ${#numbers.sequence(1, 6)}"
-                                th:value="${lvl}"
-                                th:text="'S' + ${lvl}"
-                                th:selected="${filterLevel != null and filterLevel == lvl}">
-                            S1
-                        </option>
-                    </select>
-                </div>
+                        <td class="py-4 px-4 align-top">
+                            <div class="font-semibold text-slate-900" th:text="${app.member.fullName}">Chan Tai Man</div>
+                            <div class="text-xs text-slate-600" th:text="${app.member.hkid}">A123456(7)</div>
+                            <div class="text-xs text-slate-500" th:text="${app.member.email}">test@example.com</div>
+                        </td>
 
-                <div>
-                    <label for="status" class="block text-xs font-bold uppercase text-slate-500 mb-1">Decision / Publish Status</label>
-                    <select id="status" name="status" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
-                        <option value="">All Applications</option>
-                        <option value="UNPUBLISHED" th:selected="${filterStatus == 'UNPUBLISHED'}">Unpublished Only</option>
-                        <option value="Success" th:selected="${filterStatus == 'Success'}">Success</option>
-                        <option value="Wait" th:selected="${filterStatus == 'Wait'}">Wait (Waitlist)</option>
-                        <option value="Fail" th:selected="${filterStatus == 'Fail'}">Fail</option>
-                    </select>
-                </div>
+                        <td class="py-4 px-4 align-top">
+                            <div class="font-medium text-slate-900" th:text="${app.programmeLevel.programme.name}">CIS Demo Programme</div>
+                            <span class="inline-block mt-1 px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-xs font-semibold"
+                                  th:text="'S' + ${app.programmeLevel.level}">S1</span>
+                        </td>
 
-                <div class="flex gap-2">
-                    <button type="submit" class="flex-grow bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition">
-                        Filter
-                    </button>
-                    <a th:href="@{/admin/admissions}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-3 rounded-lg transition">
-                        Reset
-                    </a>
-                </div>
-            </form>
-        </section>
-
-        <!-- 區塊 3: 申請審核與公布主表格 -->
-        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left border-collapse">
-                    <thead class="bg-slate-100 text-slate-700 text-xs uppercase border-b border-slate-200">
-                        <tr>
-                            <th class="py-3.5 px-4 font-bold">ID &amp; Submitted</th>
-                            <th class="py-3.5 px-4 font-bold">Applicant Info</th>
-                            <th class="py-3.5 px-4 font-bold">Programme &amp; Level</th>
-                            <th class="py-3.5 px-4 font-bold">Publication</th>
-                            <th class="py-3.5 px-4 font-bold">Offer Response</th>
-                            <th class="py-3.5 px-4 font-bold">Review Decision (Save)</th>
-                            <th class="py-3.5 px-4 text-right font-bold">Publish</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-200">
-                        <tr th:each="app : ${applications}" class="hover:bg-slate-50/80 transition">
-                            <!-- 申請編號與提交時間 -->
-                            <td class="py-4 px-4">
-                                <div class="font-mono font-bold text-slate-900">#<span th:text="${app.id}">1001</span></div>
-                                <div class="font-mono text-xs text-slate-500"
-                                     th:text="${#temporals.format(app.submittedAt, 'yyyy-MM-dd HH:mm')}">
-                                    2026-11-27 14:00
-                                </div>
-                            </td>
-
-                            <!-- 申請人資料 -->
-                            <td class="py-4 px-4">
-                                <div class="font-bold text-slate-900" th:text="${app.member.fullName}">Chan Tai Man</div>
-                                <div class="text-xs text-slate-500 font-mono" th:text="${app.member.hkid}">A123456(7)</div>
-                                <div class="text-xs text-slate-400" th:text="${app.member.email}">applicant@example.com</div>
-                            </td>
-
-                            <!-- 課程與年級 -->
-                            <td class="py-4 px-4">
-                                <div class="font-semibold text-slate-900" th:text="${app.programmeLevel.programme.name}">HKDSE Programme</div>
-                                <span class="inline-block mt-0.5 bg-slate-100 text-slate-800 font-mono font-bold text-xs px-2 py-0.5 rounded">
-                                    S<span th:text="${app.programmeLevel.level}">1</span>
-                                </span>
-                            </td>
-
-                            <!-- 公布狀態 (BR06) -->
-                            <td class="py-4 px-4">
-                                <span th:if="${app.publishedAt != null}"
-                                      class="inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                        <td class="py-4 px-4 align-top">
+                            <div th:if="${app.publishedAt != null}">
+                                <span class="inline-block px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold">
                                     Published
                                 </span>
-                                <span th:if="${app.publishedAt == null}"
-                                      class="inline-block bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                                    Unpublished
-                                </span>
-                                <div th:if="${app.publishedAt != null}"
-                                     class="text-[11px] font-mono text-slate-400 mt-1"
+                                <div class="text-xs text-slate-400 mt-1"
                                      th:text="${#temporals.format(app.publishedAt, 'MM-dd HH:mm')}">
-                                    11-28 10:00
+                                    11-28 17:16
                                 </div>
-                            </td>
+                            </div>
+                            <span th:if="${app.publishedAt == null}"
+                                  class="inline-block px-2.5 py-0.5 bg-amber-50 text-amber-700 rounded-full text-xs font-semibold">
+                                Unpublished
+                            </span>
+                        </td>
 
-                            <!-- 會員回應狀態 (BR08 / BR09) -->
-                            <td class="py-4 px-4 text-xs">
-                                <span th:if="${app.offerResponse == 'ACCEPTED'}"
-                                      class="inline-block bg-emerald-600 text-white font-bold px-2.5 py-0.5 rounded">
-                                    Accepted
-                                </span>
-                                <span th:if="${app.offerResponse == 'DECLINED'}"
-                                      class="inline-block bg-red-600 text-white font-bold px-2.5 py-0.5 rounded">
-                                    Declined (Seat Freed)
-                                </span>
-                                <span th:if="${app.offerResponse == null}" class="text-slate-400">&mdash;</span>
-                            </td>
+                        <td class="py-4 px-4 align-top text-slate-600">
+                            <span th:text="${app.offerResponse != null ? app.offerResponse : '—'}">—</span>
+                        </td>
 
-                            <!-- 階段一：儲存審核結果表單 (Success / Fail / Wait) -->
-                            <td class="py-4 px-4">
-                                <form th:action="@{/admin/admissions/{id}/decision(id=${app.id})}" method="post" class="flex items-center gap-2">
-                                    <select name="decision"
-                                            class="px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold bg-white">
-                                        <option value="" disabled th:selected="${app.decision == null}">Select...</option>
-                                        <option value="Success" th:selected="${app.decision == 'Success'}">Success</option>
-                                        <option value="Wait" th:selected="${app.decision == 'Wait'}">Wait</option>
-                                        <option value="Fail" th:selected="${app.decision == 'Fail'}">Fail</option>
-                                    </select>
-                                    <button type="submit"
-                                            class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition">
-                                        Save
-                                    </button>
-                                </form>
-                            </td>
+                        <td class="py-4 px-4 align-top">
+                            <form th:action="@{/admin/admissions/{id}/decision(id=${app.id})}" method="post" class="flex items-center gap-2">
+                                <select name="decision" class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+                                    <option value="" disabled th:selected="${app.decision == null or #strings.isEmpty(app.decision)}">Select...</option>
+                                    <option value="Success" th:selected="${app.decision != null and #strings.equalsIgnoreCase(app.decision, 'SUCCESS')}">Success</option>
+                                    <option value="Wait" th:selected="${app.decision != null and #strings.equalsIgnoreCase(app.decision, 'WAIT')}">Wait</option>
+                                    <option value="Fail" th:selected="${app.decision != null and #strings.equalsIgnoreCase(app.decision, 'FAIL')}">Fail</option>
+                                </select>
+                                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg">
+                                    Save
+                                </button>
+                            </form>
+                        </td>
 
-                            <!-- 階段二：單筆公布按鈕 (只有已選好 decision 時才可點擊公布，BR06 / BR10) -->
-                            <td class="py-4 px-4 text-right">
-                                <form th:if="${app.decision != null}"
-                                      th:action="@{/admin/admissions/{id}/publish(id=${app.id})}"
-                                      method="post">
-                                    <button type="submit"
-                                            th:text="${app.publishedAt == null ? 'Publish' : 'Re-Publish'}"
-                                            class="bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
-                                        Publish
-                                    </button>
-                                </form>
-                                <span th:if="${app.decision == null}" class="text-xs text-slate-400">Save decision first</span>
-                            </td>
-                        </tr>
+                        <td class="py-4 px-4 align-top text-right">
+                            <span th:if="${app.decision == null or #strings.isEmpty(app.decision)}" class="text-xs text-slate-400">
+                                Save decision first
+                            </span>
+                            <form th:if="${app.decision != null and !#strings.isEmpty(app.decision)}"
+                                  th:action="@{/admin/admissions/{id}/publish(id=${app.id})}" method="post" class="inline">
+                                <button type="submit"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg"
+                                        th:text="${app.publishedAt != null ? 'Re-Publish' : 'Publish'}">
+                                    Publish
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-                        <tr th:if="${#lists.isEmpty(applications)}">
-                            <td colspan="7" class="py-10 text-center text-slate-400 text-sm">
-                                No admission applications match the current filter criteria.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <!-- 4. Registered Student Members -->
+    <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-slate-900">4. Registered Student Members</h2>
+                <p class="text-xs text-slate-500 mt-0.5">All registered member accounts and their email verification status.</p>
             </div>
-        </section>
+            <span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold"
+                  th:text="${#lists.size(members)} + ' total'">0 total</span>
+        </div>
 
-    </main>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
+                        <th class="py-3 px-4">ID</th>
+                        <th class="py-3 px-4">Full Name</th>
+                        <th class="py-3 px-4">HKID</th>
+                        <th class="py-3 px-4">Email &amp; Phone</th>
+                        <th class="py-3 px-4">Verification Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm">
+                    <tr th:if="${#lists.isEmpty(members)}">
+                        <td colspan="5" class="py-8 text-center text-slate-500">
+                            No student members registered yet.
+                        </td>
+                    </tr>
 
-    <!-- 共用頁尾 -->
-    <div th:replace="~{fragments/layout :: footer}"></div>
+                    <tr th:each="m : ${members}" class="hover:bg-slate-50/70">
+                        <td class="py-3.5 px-4 font-bold text-slate-900" th:text="'#' + ${m.id}">#1</td>
+                        <td class="py-3.5 px-4 font-medium text-slate-900" th:text="${m.fullName}">Chan Tai Man</td>
+                        <td class="py-3.5 px-4 text-slate-700" th:text="${m.hkid}">A123456(7)</td>
+                        <td class="py-3.5 px-4">
+                            <div class="text-slate-900" th:text="${m.email}">student@example.com</div>
+                            <div class="text-xs text-slate-500" th:text="${m.phone}">12345678</div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div th:if="${m.verifiedAt != null}">
+                                <span class="inline-block px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold">
+                                    Verified
+                                </span>
+                                <span class="text-xs text-slate-400 ml-1.5"
+                                      th:text="${#temporals.format(m.verifiedAt, 'yyyy-MM-dd HH:mm')}">
+                                    2026-11-28 18:46
+                                </span>
+                            </div>
+                            <span th:if="${m.verifiedAt == null}"
+                                  class="inline-block px-2.5 py-0.5 bg-amber-50 text-amber-700 rounded-full text-xs font-semibold">
+                                Pending Verification
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-slate-900 text-slate-400 text-xs py-5 mt-12">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between gap-2">
+        <p>&copy; 2026 Christian International School (CIS) Hong Kong. All rights reserved.</p>
+        <p>School Admission System (SAS) &middot; Enquiry: admissions@cis-hk.edu.hk</p>
+    </div>
+</footer>
 
 </body>
 </html>
