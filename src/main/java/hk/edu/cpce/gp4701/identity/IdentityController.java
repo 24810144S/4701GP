@@ -1,5 +1,6 @@
 package hk.edu.cpce.gp4701.identity;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
-import java.nio.charset.StandardCharsets;
 
 import hk.edu.cpce.gp4701.model.Account;
 
@@ -61,10 +61,36 @@ public class IdentityController {
             return "identity/register";
         }
 
+        // 1. 清理並驗證 HKID 格式（支援 A123456(7) 或 A1234567，含雙字母開頭如 AB123456(A)）
+        String rawHkid = trimmedHkid.replaceAll("[\\s()]", "");
+        if (!rawHkid.matches("^[A-Z]{1,2}[0-9]{6}[0-9A]$")) {
+            model.addAttribute("error", "Invalid HKID format. Example: A123456(7) or A1234567.");
+            model.addAttribute("fullName", trimmedName);
+            model.addAttribute("hkid", trimmedHkid);
+            model.addAttribute("phone", trimmedPhone);
+            model.addAttribute("email", normalizedEmail);
+            return "identity/register";
+        }
+
+        // 統一格式化為標準帶括號形式，例如 A123456(7)
+        String normalizedHkid = rawHkid.substring(0, rawHkid.length() - 1)
+                + "(" + rawHkid.charAt(rawHkid.length() - 1) + ")";
+
+        // 2. 檢查 Email 是否重複
         if (accountRepository.existsByEmail(normalizedEmail)) {
             model.addAttribute("error", "This email address is already registered.");
             model.addAttribute("fullName", trimmedName);
-            model.addAttribute("hkid", trimmedHkid);
+            model.addAttribute("hkid", normalizedHkid);
+            model.addAttribute("phone", trimmedPhone);
+            model.addAttribute("email", normalizedEmail);
+            return "identity/register";
+        }
+
+        // 3. 檢查 HKID 是否重複（同時比對帶括號與無括號，防止舊測試資料漏網）
+        if (accountRepository.existsByHkid(normalizedHkid) || accountRepository.existsByHkid(rawHkid)) {
+            model.addAttribute("error", "This HKID is already registered.");
+            model.addAttribute("fullName", trimmedName);
+            model.addAttribute("hkid", normalizedHkid);
             model.addAttribute("phone", trimmedPhone);
             model.addAttribute("email", normalizedEmail);
             return "identity/register";
@@ -78,7 +104,7 @@ public class IdentityController {
         account.setPasswordHash(passwordEncoder.encode(password));
         account.setRole("MEMBER");
         account.setFullName(trimmedName);
-        account.setHkid(trimmedHkid);
+        account.setHkid(normalizedHkid);
         account.setPhone(trimmedPhone);
         account.setVerifiedAt(null);
         account.setVerificationCodeHash(passwordEncoder.encode(rawCode));
